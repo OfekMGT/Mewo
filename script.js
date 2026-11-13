@@ -6,10 +6,16 @@ const catEmojis = ['🐱', '😺', '🐈', '😹', '🐾'];
 
 let score = 0;
 let bestScore = Number(localStorage.getItem('mewo-best-score') || 0);
+const cats = [];
+let animationId = null;
 
 function updateHud() {
   scoreEl.textContent = String(score);
   bestEl.textContent = String(bestScore);
+}
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max);
 }
 
 function playPopSound() {
@@ -45,14 +51,21 @@ function createCat() {
   const emoji = catEmojis[Math.floor(Math.random() * catEmojis.length)];
   cat.textContent = emoji;
 
-  const size = 56 + Math.random() * 68;
-  const left = 8 + Math.random() * 75;
-  const top = 22 + Math.random() * 55;
+  const size = 54 + Math.random() * 70;
+  const x = Math.random() * (scene.clientWidth - size);
+  const y = Math.random() * (scene.clientHeight - size);
+  const speed = 1.8 + Math.random() * 3.4;
+
+  cat.size = size;
+  cat.x = x;
+  cat.y = y;
+  cat.vx = (Math.random() > 0.5 ? 1 : -1) * speed;
+  cat.vy = (Math.random() > 0.5 ? 1 : -1) * speed;
 
   cat.style.width = `${size}px`;
   cat.style.height = `${size}px`;
-  cat.style.left = `${left}%`;
-  cat.style.top = `${top}%`;
+  cat.style.left = `${x}px`;
+  cat.style.top = `${y}px`;
   cat.style.setProperty('--pop-x', `${(Math.random() - 0.5) * 250}px`);
   cat.style.setProperty('--pop-y', `${-60 - Math.random() * 150}px`);
   cat.style.setProperty('--tilt', `${(Math.random() - 0.5) * 160}deg`);
@@ -63,6 +76,39 @@ function createCat() {
   });
 
   scene.appendChild(cat);
+  cats.push(cat);
+}
+
+function animateCats() {
+  const sceneWidth = scene.clientWidth;
+  const sceneHeight = scene.clientHeight;
+
+  cats.forEach((cat) => {
+    if (cat.classList.contains('popping')) return;
+
+    cat.x += cat.vx;
+    cat.y += cat.vy;
+
+    if (cat.x <= 0 || cat.x + cat.size >= sceneWidth) {
+      cat.vx *= -1;
+      cat.x = clamp(cat.x, 0, sceneWidth - cat.size);
+    }
+
+    if (cat.y <= 0 || cat.y + cat.size >= sceneHeight) {
+      cat.vy *= -1;
+      cat.y = clamp(cat.y, 0, sceneHeight - cat.size);
+    }
+
+    if (Math.random() < 0.02) {
+      cat.vx = clamp(cat.vx + (Math.random() - 0.5) * 2.4, -7, 7);
+      cat.vy = clamp(cat.vy + (Math.random() - 0.5) * 2.4, -7, 7);
+    }
+
+    cat.style.left = `${cat.x}px`;
+    cat.style.top = `${cat.y}px`;
+  });
+
+  animationId = window.requestAnimationFrame(animateCats);
 }
 
 function popCat(cat, event) {
@@ -90,12 +136,15 @@ function popCat(cat, event) {
   }, 700);
 
   window.setTimeout(() => {
+    const index = cats.indexOf(cat);
+    if (index >= 0) cats.splice(index, 1);
     cat.remove();
     createCat();
   }, 720);
 }
 
 function resetGame() {
+  cats.splice(0, cats.length);
   scene.querySelectorAll('.cat').forEach((cat) => cat.remove());
   score = 0;
   updateHud();
@@ -103,7 +152,7 @@ function resetGame() {
 }
 
 function seedCats() {
-  const count = 14;
+  const count = 18;
   for (let i = 0; i < count; i += 1) {
     createCat();
   }
@@ -112,3 +161,6 @@ function seedCats() {
 resetButton.addEventListener('click', resetGame);
 updateHud();
 seedCats();
+if (animationId === null) {
+  animationId = window.requestAnimationFrame(animateCats);
+}
