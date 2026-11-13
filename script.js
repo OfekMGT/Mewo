@@ -1,5 +1,16 @@
 const scene = document.getElementById('scene');
+const scoreEl = document.getElementById('score');
+const bestEl = document.getElementById('best');
+const resetButton = document.getElementById('resetButton');
 const catEmojis = ['🐱', '😺', '🐈', '😹', '🐾'];
+
+let score = 0;
+let bestScore = Number(localStorage.getItem('mewo-best-score') || 0);
+
+function updateHud() {
+  scoreEl.textContent = String(score);
+  bestEl.textContent = String(bestScore);
+}
 
 function playPopSound() {
   const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -8,26 +19,20 @@ function playPopSound() {
   const context = new AudioCtx();
   const gainNode = context.createGain();
   const osc = context.createOscillator();
-  const noiseGain = context.createGain();
 
   osc.type = 'triangle';
   osc.frequency.setValueAtTime(360, context.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(90, context.currentTime + 0.18);
+  osc.frequency.exponentialRampToValueAtTime(100, context.currentTime + 0.18);
 
   gainNode.gain.setValueAtTime(0.0001, context.currentTime);
   gainNode.gain.exponentialRampToValueAtTime(0.18, context.currentTime + 0.01);
   gainNode.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.18);
-
-  noiseGain.gain.setValueAtTime(0.0001, context.currentTime);
-  noiseGain.gain.exponentialRampToValueAtTime(0.05, context.currentTime + 0.02);
-  noiseGain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.15);
 
   osc.connect(gainNode);
   gainNode.connect(context.destination);
 
   osc.start();
   osc.stop(context.currentTime + 0.2);
-
   setTimeout(() => context.close(), 250);
 }
 
@@ -67,6 +72,11 @@ function popCat(cat, event) {
   const x = event.clientX - rect.left;
   const y = event.clientY - rect.top;
 
+  score += 1;
+  bestScore = Math.max(bestScore, score);
+  localStorage.setItem('mewo-best-score', String(bestScore));
+  updateHud();
+
   cat.classList.add('popping');
 
   const burst = document.createElement('div');
@@ -85,6 +95,13 @@ function popCat(cat, event) {
   }, 720);
 }
 
+function resetGame() {
+  scene.querySelectorAll('.cat').forEach((cat) => cat.remove());
+  score = 0;
+  updateHud();
+  seedCats();
+}
+
 function seedCats() {
   const count = 14;
   for (let i = 0; i < count; i += 1) {
@@ -92,4 +109,6 @@ function seedCats() {
   }
 }
 
+resetButton.addEventListener('click', resetGame);
+updateHud();
 seedCats();
