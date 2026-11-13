@@ -1,0 +1,240 @@
+:root {
+  --bg1: #160f2d;
+  --bg2: #2a1553;
+  --bg3: #1f7ae0;
+  --panel: rgba(18, 12, 30, 0.5);
+  --accent: #ffaf6b;
+  --pink: #ff74d4;
+  --cyan: #74f0ff;
+  --lime: #ddff7d;
+  --shadow: rgba(0, 0, 0, 0.28);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  height: 100%;
+  font-family: Inter, "Segoe UI", sans-serif;
+  background: radial-gradient(circle at top, #39215f 0%, var(--bg2) 24%, var(--bg1) 100%);
+  color: white;
+  overflow: hidden;
+}
+
+body {
+  position: relative;
+  display: grid;
+  place-items: center;
+}
+
+.sky-glow {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 15%, rgba(255, 184, 96, 0.22), transparent 18%),
+    radial-gradient(circle at 80% 20%, rgba(116, 240, 255, 0.18), transparent 20%),
+    radial-gradient(circle at 50% 80%, rgba(255, 116, 212, 0.18), transparent 22%);
+  pointer-events: none;
+}
+
+.stars {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(2px 2px at 30% 40%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 45% 70%, rgba(255,255,255,0.9), transparent),
+    radial-gradient(2px 2px at 60% 15%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 78% 35%, rgba(255,255,255,0.75), transparent),
+    radial-gradient(2px 2px at 88% 75%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 95% 55%, rgba(255,255,255,0.8), transparent),
+    radial-gradient(2px 2px at 20% 80%, rgba(255,255,255,0.7), transparent);
+  opacity: 0.8;
+  pointer-events: none;
+}
+
+.app {
+  position: relative;
+  width: min(1100px, 92vw);
+  height: min(760px, 88vh);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero {
+  position: absolute;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.45rem;
+  color: var(--cyan);
+  text-shadow: 0 0 12px rgba(116, 240, 255, 0.9);
+}
+
+h1 {
+  margin: 0.25rem 0 0.35rem;
+  font-size: clamp(2.4rem, 3vw, 4.2rem);
+  line-height: 0.95;
+  letter-spacing: -0.05em;
+  text-shadow: 0 8px 32px rgba(255, 116, 212, 0.3);
+}
+
+.subtitle {
+  margin: 0;
+  font-size: 1rem;
+  color: rgba(255,255,255,0.8);
+}
+
+#scene {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  border: 1px solid rgba(255,255,255,0.1);
+  box-shadow: inset 0 0 60px rgba(255,255,255,0.03), 0 40px 100px rgba(0,0,0,0.25);
+  overflow: hidden;
+}
+
+.cat {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,0.16), rgba(255,255,255,0.03));
+  box-shadow: 0 16px 28px rgba(0,0,0,0.18), inset 0 -8px 18px rgba(255,255,255,0.12);
+  font-size: clamp(2rem, 2vw, 3.2rem);
+  cursor: pointer;
+  user-select: none;
+  padding: 0;
+  animation: bob 2.8s ease-in-out infinite alternate;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  will-change: transform, left, top;
+}
+
+.cat:hover {
+  transform: scale(1.08) rotate(-5deg);
+  box-shadow: 0 18px 30px rgba(0,0,0,0.2), 0 0 22px rgba(255, 173, 95, 0.45);
+}
+
+.cat:active {
+  transform: scale(0.96);
+}
+
+@keyframes bob {
+  0% { transform: translateY(0px) rotate(-3deg); }
+  100% { transform: translateY(-12px) rotate(3deg); }
+}
+
+.cat.popping {
+  pointer-events: none;
+  animation: catPop 0.7s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards;
+}
+
+@keyframes catPop {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+    filter: brightness(1);
+  }
+  15% {
+    transform: translate(calc(var(--pop-x) * 0.18), calc(var(--pop-y) * 0.15)) scale(1.35) rotate(calc(var(--tilt) * 0.4));
+  }
+  40% {
+    transform: translate(calc(var(--pop-x) * 0.6), calc(var(--pop-y) * 0.7)) scale(1.15) rotate(var(--tilt));
+    opacity: 1;
+  }
+  75% {
+    transform: translate(var(--pop-x), var(--pop-y)) scale(0.18) rotate(calc(var(--tilt) * 1.15));
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(calc(var(--pop-x) * 1.25), calc(var(--pop-y) * 1.4 - 40px)) scale(0.06) rotate(calc(var(--tilt) * 1.5));
+    opacity: 0;
+  }
+}
+
+.burst {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.burst::before,
+.burst::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, #fff 0%, var(--accent) 28%, rgba(255, 116, 212, 0.3) 52%, transparent 70%);
+  box-shadow: 0 0 20px rgba(255, 170, 108, 0.8);
+  transform: translate(-50%, -50%);
+}
+
+.burst::before {
+  animation: burstBlast 700ms ease-out forwards;
+}
+
+.burst::after {
+  content: "POP!";
+  width: auto;
+  height: auto;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+  font-weight: 900;
+  font-size: 1.05rem;
+  letter-spacing: 0.08rem;
+  color: #fff;
+  text-shadow: 0 0 16px rgba(255, 116, 212, 0.9), 0 0 30px rgba(116, 240, 255, 0.8);
+  transform: translate(-50%, -110%) scale(0.4);
+  animation: popText 700ms ease-out forwards;
+}
+
+@keyframes burstBlast {
+  0% { opacity: 0.95; transform: translate(-50%, -50%) scale(0.25); }
+  30% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(2.6); }
+}
+
+@keyframes popText {
+  0% { opacity: 0; transform: translate(-50%, -70%) scale(0.5); }
+  30% { opacity: 1; }
+  60% { opacity: 1; }
+  100% { opacity: 0; transform: translate(-50%, -160%) scale(1.2); }
+}
+
+@media (max-width: 640px) {
+  .app {
+    width: 96vw;
+    height: 88vh;
+  }
+
+  .hero {
+    top: 20px;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+  }
+}
